@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '#kl+^6o@uw8cw%&&auxarrxgl+b0na+a0g0e&3#48_r%dg4y0v'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -122,3 +122,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 DB_UPLOAD_BASE_DIR = os.path.join(BASE_DIR, "db_uploads")
+
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "static")
