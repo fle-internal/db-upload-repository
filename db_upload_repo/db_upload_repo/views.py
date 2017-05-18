@@ -9,31 +9,32 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import UploadFileForm
 from datetime import datetime
 
-LATEST_DB_PATH = os.path.join(settings.DB_UPLOAD_BASE_DIR, "latest")
-HISTORICAL_DB_PATH = os.path.join(settings.DB_UPLOAD_BASE_DIR, "historical")
-
-try:
-    os.makedirs(LATEST_DB_PATH)
-except OSError as e:
-    pass
-
-try:
-    os.makedirs(HISTORICAL_DB_PATH)
-except OSError as e:
-    pass
-
 @csrf_exempt
 def upload_file(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
+            handle_uploaded_file(request.FILES['file'], form.data["project"])
             return HttpResponseRedirect('/upload/')
     else:
         form = UploadFileForm()
     return render(request, 'upload.html', {'form': form})
 
-def handle_uploaded_file(f):
+def handle_uploaded_file(f, project):
+
+    LATEST_DB_PATH = os.path.join(settings.DB_UPLOAD_BASE_DIR, project, "latest")
+    HISTORICAL_DB_PATH = os.path.join(settings.DB_UPLOAD_BASE_DIR, project, "historical")
+
+    try:
+        os.makedirs(LATEST_DB_PATH)
+    except OSError as e:
+        pass
+
+    try:
+        os.makedirs(HISTORICAL_DB_PATH)
+    except OSError as e:
+        pass
+
     path = tempfile.mktemp(prefix="dbupload-", suffix=".sqlite3")    
     with open(path, 'wb+') as destination:
         for chunk in f.chunks():

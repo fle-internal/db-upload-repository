@@ -6,8 +6,12 @@
         <form target="." method="POST" enctype="multipart/form-data">
             <p>{{ form.non_field_errors }}</p>
             <p>
-                {{ form.file.errors }}
-                {{ form.file }}
+                Project: {{ form.project }}
+                {{ form.project.errors.as_text }}
+            </p>
+            <p>
+                Database: {{ form.file }}
+                {{ form.file.errors.as_text }}
             </p>
             <p><input type="submit" value="Upload" /></p>
         </form>
