@@ -103,3 +103,5 @@ ENV/
 db_uploads/
 
 db.sqlite3
+
+/static/
