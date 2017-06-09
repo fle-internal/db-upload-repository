@@ -41,9 +41,14 @@ def handle_uploaded_file(f, project):
             destination.write(chunk)
     conn = sqlite3.connect(path)
     cursor = conn.cursor()
+
     cursor.execute("SELECT id FROM kolibriauth_facilitydataset")
     dataset_id = cursor.fetchone()[0]
-    latest_dest_path = os.path.join(LATEST_DB_PATH, "{}.sqlite3".format(dataset_id))
-    historical_dest_path = os.path.join(HISTORICAL_DB_PATH, "{}-{}.sqlite3".format(dataset_id, datetime.now().isoformat()))
+
+    cursor.execute("SELECT id FROM morango_instanceidmodel WHERE current = 1")
+    instance_id = cursor.fetchone()[0]
+
+    latest_dest_path = os.path.join(LATEST_DB_PATH, "{}-{}.sqlite3".format(dataset_id, instance_id))
+    historical_dest_path = os.path.join(HISTORICAL_DB_PATH, "{}-{}-{}.sqlite3".format(dataset_id, instance_id, datetime.now().isoformat()))
     shutil.copyfile(path, latest_dest_path)
     shutil.copyfile(path, historical_dest_path)
