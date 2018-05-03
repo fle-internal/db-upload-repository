@@ -5,7 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Project(models.Model):
-    project_code = models.CharField(_('project code'), max_length=120, unique=True)
+    project_code = models.CharField(
+        _('project code'), max_length=120, unique=True)
 
     def __str__(self):
         return self.project_code
@@ -74,7 +75,7 @@ class User(AbstractBaseUser):
     def get_short_name(self):
         return self.email
 
-    def __str__(self):              # __unicode__ on Python 2
+    def __str__(self):  # __unicode__ on Python 2
         return self.full_name
 
     def has_perm(self, perm, obj=None):
@@ -90,3 +91,15 @@ class User(AbstractBaseUser):
     @property
     def is_superuser(self):
         return self.is_admin
+
+
+class FacilitySummary(models.Model):
+    project = models.ForeignKey(Project)
+    facility_name = models.CharField(_('Facility name'), max_length=100)
+    facility_id = models.UUIDField(_('Facility id'))
+    generated = models.DateTimeField(_('Summary generated'), auto_now_add=True)
+    last_sync = models.DateTimeField(_('Last sync date'))
+    num_content_sessions = models.IntegerField(_('Number of content sessions'))
+    time_content_sessions = models.FloatField(
+        _('Time spent on content sessions'))
+    next_summary = models.ForeignKey('self', null=True, blank=True)

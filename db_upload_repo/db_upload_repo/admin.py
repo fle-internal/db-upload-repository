@@ -12,7 +12,8 @@ class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label='Password confirmation', widget=forms.PasswordInput)
 
     class Meta:
         model = User
@@ -62,25 +63,31 @@ class UserAdmin(BaseUserAdmin):
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
     list_display = ('email', 'project', 'full_name', 'is_admin')
-    list_filter = ('is_admin',)
+    list_filter = ('is_admin', )
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('full_name',)}),
-        ('Permissions', {'fields': ('is_admin', 'project',)}),
+        (None, {
+            'fields': ('email', 'password')
+        }),
+        ('Personal info', {
+            'fields': ('full_name', )
+        }),
+        ('Permissions', {
+            'fields': (
+                'is_admin',
+                'project',
+            )
+        }),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
-    add_fieldsets = (
-        (
-            None, {
-                'classes': ('wide',),
-                'fields': ('email', 'project', 'full_name', 'password1', 'password2')
-            }
-        ),
-    )
-    search_fields = ('email',)
-    ordering = ('email',)
+    add_fieldsets = ((None, {
+        'classes': ('wide', ),
+        'fields': ('email', 'project', 'full_name', 'password1', 'password2')
+    }), )
+    search_fields = ('email', )
+    ordering = ('email', )
     filter_horizontal = ()
+
 
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
