@@ -1,8 +1,10 @@
+import base64
 import mimetypes
 import os
 import shutil
 import sqlite3
 import tempfile
+from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -22,7 +24,21 @@ def redirect_home(request):
     return HttpResponseRedirect('/')
 
 
-def user_has_permission_for_project(user, project):
+def basic_http_auth(request):
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth = request.META['HTTP_AUTHORIZATION'].split()
+        if len(auth) == 2:
+            if auth[0].lower() == "basic":
+                username, password = base64.b64decode(auth[1]).split(':', 1)
+                return authenticate(username=username, password=password)
+
+
+def user_has_permission_for_project(request, project):
+    user = request.user
+    if not user.is_authenticated:
+        user = basic_http_auth(request)
+        if user is None:
+            return False
     if user.is_admin or user.project and user.project.project_code == project:
         return True
 
@@ -162,7 +178,7 @@ def root_upload_view(request):
 
 def project_root_view(request, project):
     try:
-        assert user_has_permission_for_project(request.user, project)
+        assert user_has_permission_for_project(request, project)
     except AssertionError:
         return redirect_home(request)
     contents = [
@@ -189,7 +205,7 @@ def project_root_view(request, project):
 
 def project_latest_view(request, project):
     try:
-        assert user_has_permission_for_project(request.user, project)
+        assert user_has_permission_for_project(request, project)
     except AssertionError:
         return redirect_home(request)
     directory_path = latest_db_path(project)
@@ -211,7 +227,7 @@ def project_latest_view(request, project):
 
 def project_historical_view(request, project):
     try:
-        assert user_has_permission_for_project(request.user, project)
+        assert user_has_permission_for_project(request, project)
     except AssertionError:
         return redirect_home(request)
     directory_path = historical_db_path(project)
@@ -260,7 +276,7 @@ def download_file(request, file_path):
 
 def latest_download_view(request, project, file_name):
     try:
-        assert user_has_permission_for_project(request.user, project)
+        assert user_has_permission_for_project(request, project)
     except AssertionError:
         return redirect_home(request)
     file_path = os.path.join(latest_db_path(project), file_name)
@@ -269,7 +285,7 @@ def latest_download_view(request, project, file_name):
 
 def historical_download_view(request, project, file_name):
     try:
-        assert user_has_permission_for_project(request.user, project)
+        assert user_has_permission_for_project(request, project)
     except AssertionError:
         return redirect_home(request)
     file_path = os.path.join(historical_db_path(project), file_name)
@@ -291,6 +307,13 @@ def create_report_view(request, project):
 class ReportView(TemplateView):
 
     template_name = "report/report.html"
+
+    def get(self, request, *args, **kwargs):
+        try:
+            assert user_has_permission_for_project(request, kwargs['project'])
+        except AssertionError:
+            return redirect_home(request)
+        return super(ReportView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ReportView, self).get_context_data(**kwargs)
@@ -318,12 +341,13 @@ class ReportView(TemplateView):
         inspector = app.control.inspect()
         active_tasks = inspector.active()
         task_id = None
-        for task_list in active_tasks.values():
-            for task in task_list:
-                if task['name'].endswith('create_report'):
-                    task_id = task['id']
+        if active_tasks:
+            for task_list in active_tasks.values():
+                for task in task_list:
+                    if task['name'].endswith('create_report'):
+                        task_id = task['id']
+                        break
+                if task_id:
                     break
-            if task_id:
-                break
         context['report_in_progress'] = task_id
         return context
