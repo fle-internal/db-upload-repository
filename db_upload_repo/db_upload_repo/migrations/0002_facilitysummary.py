@@ -9,22 +9,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db_upload_repo', '0001_initial'),
+        ("db_upload_repo", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FacilitySummary',
+            name="FacilitySummary",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('facility_name', models.CharField(max_length=100, verbose_name='Facility name')),
-                ('facility_id', models.UUIDField(verbose_name='Facility id')),
-                ('generated', models.DateTimeField(auto_now_add=True, verbose_name='Summary generated')),
-                ('last_sync', models.DateTimeField(verbose_name='Last sync date')),
-                ('num_content_sessions', models.IntegerField(verbose_name='Number of content sessions')),
-                ('time_content_sessions', models.FloatField(verbose_name='Time spent on content sessions')),
-                ('next_summary', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='db_upload_repo.FacilitySummary')),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='db_upload_repo.Project')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("facility_name", models.CharField(max_length=100, verbose_name="Facility name")),
+                ("facility_id", models.UUIDField(verbose_name="Facility id")),
+                ("generated", models.DateTimeField(auto_now_add=True, verbose_name="Summary generated")),
+                ("last_sync", models.DateTimeField(verbose_name="Last sync date")),
+                ("num_content_sessions", models.IntegerField(verbose_name="Number of content sessions")),
+                ("time_content_sessions", models.FloatField(verbose_name="Time spent on content sessions")),
+                ("next_summary", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to="db_upload_repo.FacilitySummary")),
+                ("project", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="db_upload_repo.Project")),
             ],
         ),
     ]

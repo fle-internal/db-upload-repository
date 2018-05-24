@@ -8,7 +8,7 @@ class UploadFileForm(forms.Form):
 
     def clean_project(self):
 
-        data = self.cleaned_data['project'].lower()
+        data = self.cleaned_data["project"].lower()
 
         data = "".join(
             [c for c in data if c in (string.ascii_lowercase + string.digits)])

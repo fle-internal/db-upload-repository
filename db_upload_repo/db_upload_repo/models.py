@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 class Project(models.Model):
     project_code = models.CharField(
-        _('project code'), max_length=120, unique=True)
+        _("project code"), max_length=120, unique=True)
 
     def __str__(self):
         return self.project_code
@@ -18,7 +18,7 @@ class MyUserManager(BaseUserManager):
         Creates and saves a User with the given email, password, and project.
         """
         if not email:
-            raise ValueError('Users must have an email address')
+            raise ValueError("Users must have an email address")
 
         if project_code:
 
@@ -59,12 +59,12 @@ class User(AbstractBaseUser):
     objects = MyUserManager()
 
     email = models.EmailField(
-        verbose_name=_('email address'),
+        verbose_name=_("email address"),
         max_length=255,
         unique=True,
     )
 
-    full_name = models.CharField(_('full name'), max_length=120, blank=True)
+    full_name = models.CharField(_("full name"), max_length=120, blank=True)
     project = models.ForeignKey(Project, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -95,11 +95,11 @@ class User(AbstractBaseUser):
 
 class FacilitySummary(models.Model):
     project = models.ForeignKey(Project)
-    facility_name = models.CharField(_('Facility name'), max_length=100)
-    facility_id = models.UUIDField(_('Facility id'))
-    generated = models.DateTimeField(_('Summary generated'), auto_now_add=True)
-    last_sync = models.DateTimeField(_('Last sync date'))
-    num_content_sessions = models.IntegerField(_('Number of content sessions'))
+    facility_name = models.CharField(_("Facility name"), max_length=100)
+    facility_id = models.UUIDField(_("Facility id"))
+    generated = models.DateTimeField(_("Summary generated"), auto_now_add=True)
+    last_sync = models.DateTimeField(_("Last sync date"))
+    num_content_sessions = models.IntegerField(_("Number of content sessions"))
     time_content_sessions = models.FloatField(
-        _('Time spent on content sessions'))
-    next_summary = models.ForeignKey('self', null=True, blank=True)
+        _("Time spent on content sessions"))
+    next_summary = models.ForeignKey("self", null=True, blank=True)
