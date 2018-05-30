@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h1>{% trans "Uploads Home" %}</h1>
+<hr>
+{% if user.is_admin %}
+<p><a href="{% url 'all_projects' %}">{% trans 'All Projects' %}</a></p>
+{% elif user.project %}
+<p><a href="{% url 'project_report' user.project.project_code %}">
+    {% blocktrans with project=user.project.project_code %}View data report for {{ project }}{% endblocktrans %}
+</a></p>
+<p><a href="{% url 'root_project' user.project.project_code %}">
+    {% blocktrans with project=user.project.project_code %}View raw databases for {{ project }}{% endblocktrans %}
+</a></p>
+{% endif %}
+<p><a href="{% url 'logout_then_login' %}">{% trans 'Logout' %}</a></p>
+{% endblock %}
