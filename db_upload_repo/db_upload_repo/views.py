@@ -166,7 +166,7 @@ def show_directory_contents(request,
 
 
 def root_upload_view(request):
-    if user.is_authenticated and request.user.is_admin:
+    if request.user.is_authenticated and request.user.is_admin:
         directory_path = settings.DB_UPLOAD_BASE_DIR
         contents = get_directories(
             directory_path,
