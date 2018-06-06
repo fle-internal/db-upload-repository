@@ -30,7 +30,7 @@ CELERY_TASK_SERIALIZER = "json"
 SECRET_KEY = "#kl+^6o@uw8cw%&&auxarrxgl+b0na+a0g0e&3#48_r%dg4y0v"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
