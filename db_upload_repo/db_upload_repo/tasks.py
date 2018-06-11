@@ -31,9 +31,9 @@ def create_report(project_code):
                     collections = pandas.read_sql_table(
                         "kolibriauth_collection", db_engine)
                     facility_name = collections[collections.kind ==
-                                                "facility'].iloc[0]['name"]
+                                                "facility"].iloc[0]["name"]
                     facility_id = collections[collections.kind ==
-                                              "facility'].iloc[0]['id"]
+                                              "facility"].iloc[0]["id"]
                     session_logs = pandas.read_sql_table(
                         "logger_contentsessionlog", db_engine)
                     time_content_sessions = session_logs["time_spent"].sum()
