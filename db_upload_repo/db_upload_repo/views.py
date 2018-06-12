@@ -325,7 +325,7 @@ class ReportView(TemplateView):
             })
         def transform_time_timedelta(obj):
             index = fields.index("time_content_sessions")
-            return tuple(timedelta(val) if i == index else val for i, val in enumerate(obj))
+            return tuple(timedelta(seconds=val) if i == index else val for i, val in enumerate(obj))
         context["data"] = map(transform_time_timedelta, FacilitySummary.objects.filter(
             project=project,
             next_summary__isnull=True).order_by("last_sync").values_list(

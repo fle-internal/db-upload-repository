@@ -98,7 +98,7 @@
   {% endif %}
 {% endblock %}
 {% block content %}
-  <h1>{% trans "Summary Syncing Report" %}</h1>
+  <h1>{% blocktrans with project_title=project|upper %}Summary Syncing Report for {{ project_title }}{% endblocktrans %}</h1>
   {% if report_in_progress %}
   <button disabled="disabled">{% trans "A New Report is Being Generated" %}</button>
   {% else %}
