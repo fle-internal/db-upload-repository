@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 from db_upload_repo.forms import UploadFileForm
 from datetime import datetime
+from datetime import timedelta
 from db_upload_repo.models import FacilitySummary, Project
 from db_upload_repo.celery import app
 
@@ -35,7 +36,7 @@ def basic_http_auth(request):
 
 def user_has_permission_for_project(request, project):
     user = request.user
-    if not user.is_authenticated:
+    if not user.is_authenticated():
         user = basic_http_auth(request)
         if user is None:
             return False
@@ -322,10 +323,13 @@ class ReportView(TemplateView):
                 "name": FacilitySummary._meta.get_field(field).verbose_name,
                 "header": field,
             })
-        context["data"] = FacilitySummary.objects.filter(
+        def transform_time_timedelta(obj):
+            index = fields.index("time_content_sessions")
+            return tuple(timedelta(val) if i == index else val for i, val in enumerate(obj))
+        context["data"] = map(transform_time_timedelta, FacilitySummary.objects.filter(
             project=project,
             next_summary__isnull=True).order_by("last_sync").values_list(
-                *fields)
+                *fields))
         inspector = app.control.inspect()
         active_tasks = inspector.active()
         task_id = None
