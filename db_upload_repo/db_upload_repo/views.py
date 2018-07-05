@@ -19,6 +19,7 @@ from datetime import datetime
 from datetime import timedelta
 from db_upload_repo.models import FacilitySummary, Project
 from db_upload_repo.celery import app
+from zipfile import ZipFile
 
 
 def redirect_home(request):
@@ -88,10 +89,22 @@ def handle_uploaded_file(f, project):
     except OSError as e:
         pass
 
-    path = tempfile.mktemp(prefix="dbupload-", suffix=".sqlite3")
+    path = tempfile.mktemp(prefix="dbupload-")
     with open(path, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
+
+    # attempt to unzip the file that was sent, in case it was zipped up
+    try:
+        with ZipFile(path) as zip_file:
+            filepaths = [name for name in zip_file.namelist() if name.endswith(".sqlite3")]
+            if len(filepaths) == 0:
+                raise Exception("Zip does not contain a sqlite3 database")
+            directory = tempfile.mkdtemp(prefix="dbupload-")
+            path = zip_file.extract(filepaths[0], path=directory)
+    except:
+        pass
+
     conn = sqlite3.connect(path)
     cursor = conn.cursor()
 
